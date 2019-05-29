@@ -64,3 +64,5 @@ function Tutorial() {
 ```
 
 See the article [How to Write a TypeScript Transform (Plugin)](https://dev.doctorevidence.com/how-to-write-a-typescript-transform-plugin-fc5308fdd943) for how to use it in, e.g., webpack.
+
+**Important:** If you use build caching, e.g. `cache-loader`, make sure to set it up so that changes to the localization data would invalidate the cached build output.
