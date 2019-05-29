@@ -26,23 +26,23 @@ function test(input, output) {
   })
 }
 
-test('__("test")', '__({ $key: "test", en: "Test", nyan: "Meow" });')
+test('__("test")', '__(__.$("test", { en: "Test", nyan: "Meow" }));')
 test('__.zzz("test")', '__.zzz("test");')
 test(
   '__.string("test")',
-  '__.string({ $key: "test", en: "Test", nyan: "Meow" });'
+  '__.string(__.$("test", { en: "Test", nyan: "Meow" }));'
 )
 test(
   '__.template("test")',
-  '__.template({ $key: "test", en: "Test", nyan: "Meow" });'
+  '__.template(__.$("test", { en: "Test", nyan: "Meow" }));'
 )
 test(
   '__.dual(1, "test", "hello")',
-  '__.dual(1, { $key: "test", en: "Test", nyan: "Meow" }, { $key: "hello", en: "Hello", nyan: "Nyan" });'
+  '__.dual(1, __.$("test", { en: "Test", nyan: "Meow" }), __.$("hello", { en: "Hello", nyan: "Nyan" }));'
 )
 test(
   '__.dual.string(1, "test", "hello")',
-  '__.dual.string(1, { $key: "test", en: "Test", nyan: "Meow" }, { $key: "hello", en: "Hello", nyan: "Nyan" });'
+  '__.dual.string(1, __.$("test", { en: "Test", nyan: "Meow" }), __.$("hello", { en: "Hello", nyan: "Nyan" }));'
 )
 
 it('runs the example in README', async () => {

@@ -63,9 +63,7 @@ const transformer = options => transformationContext => sourceFile => {
             if (!ts.isStringLiteral(arg)) {
               return arg
             }
-            const properties = [
-              ts.createPropertyAssignment('$key', ts.createLiteral(arg.text)),
-            ]
+            const properties = []
             for (const language of Object.keys(options.l10nData)) {
               const foundText = options.l10nData[language][arg.text]
               if (foundText && typeof foundText === 'string') {
@@ -76,7 +74,11 @@ const transformer = options => transformationContext => sourceFile => {
                 )
               }
             }
-            return ts.createObjectLiteral(properties)
+            return ts.createCall(
+              ts.createPropertyAccess(ts.createIdentifier('__'), '$'),
+              [],
+              [arg, ts.createObjectLiteral(properties)]
+            )
           } else {
             return arg
           }

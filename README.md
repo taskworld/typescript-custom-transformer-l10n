@@ -45,18 +45,20 @@ function Tutorial() {
   return (
     <section>
       <h1>
-        {__({
-          $key: 'tutorial.welcome.headline',
-          en: 'Welcome to %{workspace_name}',
-          th: 'ยินดีต้อนรับเข้าสู่ %{workspace_name}',
-        })}
+        {__(
+          __.$('tutorial.welcome.headline', {
+            en: 'Welcome to %{workspace_name}',
+            th: 'ยินดีต้อนรับเข้าสู่ %{workspace_name}',
+          })
+        )}
       </h1>
       <p>
-        {__({
-          $key: 'tutorial.welcome.paragraph',
-          en: 'Your team will have all that you need to get work done.',
-          th: 'บริหารจัดการงานได้อย่างครบถ้วนและมีประสิทธิภาพ',
-        })}
+        {__(
+          __.$('tutorial.welcome.paragraph', {
+            en: 'Your team will have all that you need to get work done.',
+            th: 'บริหารจัดการงานได้อย่างครบถ้วนและมีประสิทธิภาพ',
+          })
+        )}
       </p>
     </section>
   )
