@@ -8,7 +8,7 @@
     "typescript": "^3.2.2"
   },
   "name": "@taskworld/typescript-custom-transformer-l10n",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A TypeScript Custom AST transformer that inlines localization strings into the source code",
   "main": "transformer.js",
   "dependencies": {},
