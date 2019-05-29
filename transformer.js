@@ -61,7 +61,7 @@ const transformer = options => transformationContext => sourceFile => {
         node.arguments.map(arg => {
           if (match.includes(arg)) {
             if (!ts.isStringLiteral(arg)) {
-              return arg
+              return ts.visitEachChild(arg, visitor, transformationContext)
             }
             const properties = []
             for (const language of Object.keys(options.l10nData)) {
@@ -80,7 +80,7 @@ const transformer = options => transformationContext => sourceFile => {
               [arg, ts.createObjectLiteral(properties)]
             )
           } else {
-            return arg
+            return ts.visitEachChild(arg, visitor, transformationContext)
           }
         })
       )

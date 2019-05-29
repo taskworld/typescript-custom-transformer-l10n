@@ -44,6 +44,10 @@ test(
   '__.dual.string(1, "test", "hello")',
   '__.dual.string(1, __.$("test", { en: "Test", nyan: "Meow" }), __.$("hello", { en: "Hello", nyan: "Nyan" }));'
 )
+test(
+  '__("test", { x: __("hello") })',
+  '__(__.$("test", { en: "Test", nyan: "Meow" }), { x: __(__.$("hello", { en: "Hello", nyan: "Nyan" })) });'
+)
 
 it('runs the example in README', async () => {
   const readme = require('fs').readFileSync('README.md', 'utf8')
