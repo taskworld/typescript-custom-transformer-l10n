@@ -41,23 +41,23 @@ function Tutorial() {
 …when transpiled with this custom AST transformer, the output will look like this:
 
 ```js
+var l10n$tutorial_welcome_headline = {
+    en: 'Welcome to %{workspace_name}',
+    th: 'ยินดีต้อนรับเข้าสู่ %{workspace_name}',
+  },
+  l10n$tutorial_welcome_paragraph = {
+    en: 'Your team will have all that you need to get work done.',
+    th: 'บริหารจัดการงานได้อย่างครบถ้วนและมีประสิทธิภาพ',
+  }
 function Tutorial() {
   return (
     <section>
       <h1>
-        {__(
-          __.$('tutorial.welcome.headline', {
-            en: 'Welcome to %{workspace_name}',
-            th: 'ยินดีต้อนรับเข้าสู่ %{workspace_name}',
-          })
-        )}
+        {__(__.$('tutorial.welcome.headline', l10n$tutorial_welcome_headline))}
       </h1>
       <p>
         {__(
-          __.$('tutorial.welcome.paragraph', {
-            en: 'Your team will have all that you need to get work done.',
-            th: 'บริหารจัดการงานได้อย่างครบถ้วนและมีประสิทธิภาพ',
-          })
+          __.$('tutorial.welcome.paragraph', l10n$tutorial_welcome_paragraph)
         )}
       </p>
     </section>
