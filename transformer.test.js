@@ -10,6 +10,12 @@ const demoData = {
     test: 'Meow',
     hello: 'Nyan',
   },
+  'a+1': {
+    x: 1,
+  },
+  'a-1': {
+    x: 2,
+  },
 }
 
 function test(input, output) {
@@ -22,31 +28,45 @@ function test(input, output) {
           },
         })
         .outputText.trim()
-    ).toBe(output)
+    ).toBe(ts.transpileModule(output, {}).outputText.trim())
   })
 }
 
-test('__("test")', '__(__.$("test", { en: "Test", nyan: "Meow" }));')
+test(
+  '__("test")',
+  'var l10n$test = { en: "Test", nyan: "Meow" }; __(__.$("test", l10n$test));'
+)
 test('__.zzz("test")', '__.zzz("test");')
 test(
   '__.string("test")',
-  '__.string(__.$("test", { en: "Test", nyan: "Meow" }));'
+  'var l10n$test = { en: "Test", nyan: "Meow" }; __.string(__.$("test", l10n$test));'
 )
 test(
   '__.template("test")',
-  '__.template(__.$("test", { en: "Test", nyan: "Meow" }));'
+  'var l10n$test = { en: "Test", nyan: "Meow" }; __.template(__.$("test", l10n$test));'
 )
 test(
   '__.dual(1, "test", "hello")',
-  '__.dual(1, __.$("test", { en: "Test", nyan: "Meow" }), __.$("hello", { en: "Hello", nyan: "Nyan" }));'
+  'var l10n$test = { en: "Test", nyan: "Meow" }, l10n$hello = { en: "Hello", nyan: "Nyan" };' +
+    '__.dual(1, __.$("test", l10n$test), __.$("hello", l10n$hello));'
 )
 test(
   '__.dual.string(1, "test", "hello")',
-  '__.dual.string(1, __.$("test", { en: "Test", nyan: "Meow" }), __.$("hello", { en: "Hello", nyan: "Nyan" }));'
+  'var l10n$test = { en: "Test", nyan: "Meow" }, l10n$hello = { en: "Hello", nyan: "Nyan" };' +
+    '__.dual.string(1, __.$("test", l10n$test), __.$("hello", l10n$hello));'
 )
 test(
   '__("test", { x: __("hello") })',
-  '__(__.$("test", { en: "Test", nyan: "Meow" }), { x: __(__.$("hello", { en: "Hello", nyan: "Nyan" })) });'
+  'var l10n$test = { en: "Test", nyan: "Meow" }, l10n$hello = { en: "Hello", nyan: "Nyan" };' +
+    '__(__.$("test", l10n$test), { x: __(__.$("hello", l10n$hello)) });'
+)
+
+// Ensures that the transformer doesn't break when the l10nData has a key that
+// normalizes similarly.
+test(
+  'let x = () => [__("a+1"), __.string("a-1")]',
+  'var l10n$a_1 = {}, l10n$a_1_ = {};' +
+    'var x = function () { return [__(__.$("a+1", l10n$a_1)), __.string(__.$("a-1", l10n$a_1_))]; };'
 )
 
 it('runs the example in README', async () => {
@@ -54,10 +74,13 @@ it('runs the example in README', async () => {
   const prettier = require('prettier')
   let inputCode
   let expectedCode
-  readme.replace(/```js\s*(function Tutorial[^]*?)```/g, (a, code) => {
-    if (!inputCode) inputCode = code.trim()
-    else if (!expectedCode) expectedCode = code.trim()
-  })
+  readme.replace(
+    /```js\s*((?:function Tutorial|var l10n)[^]*?)```/g,
+    (a, code) => {
+      if (!inputCode) inputCode = code.trim()
+      else if (!expectedCode) expectedCode = code.trim()
+    }
+  )
   const l10nData = JSON.parse(readme.match(/```json\s*(\{[^]*?)```/)[1])
   const prettierConfig = await prettier.resolveConfig('transformer.js')
   const outputCode = prettier

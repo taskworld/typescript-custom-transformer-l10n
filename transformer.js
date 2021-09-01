@@ -51,6 +51,25 @@ const transformer = options => transformationContext => sourceFile => {
     }
     return null
   }
+
+  const l10nObjects = {}
+  const l10nVariableNames = {}
+
+  function getVariableName(key) {
+    let candidateName = `l10n\$${key.replace(/[^a-z0-9]+/g, '_')}`
+    for (
+      ;
+      l10nVariableNames[candidateName] &&
+      l10nVariableNames[candidateName] !== key;
+      candidateName += '_'
+    ) {
+      // This variable name is already used by another key.
+      // We need to find a new one.
+    }
+    l10nVariableNames[candidateName] = key
+    return candidateName
+  }
+
   const visitor = node => {
     const match = matchL10nNode(node)
     if (match) {
@@ -63,21 +82,32 @@ const transformer = options => transformationContext => sourceFile => {
             if (!ts.isStringLiteral(arg)) {
               return ts.visitEachChild(arg, visitor, transformationContext)
             }
-            const properties = []
-            for (const language of Object.keys(options.l10nData)) {
-              const foundText = options.l10nData[language][arg.text]
-              if (foundText && typeof foundText === 'string') {
-                const stringLiteralNode = ts.createStringLiteral(foundText)
-                ts.setEmitFlags(stringLiteralNode, ts.EmitFlags.NoAsciiEscaping)
-                properties.push(
-                  ts.createPropertyAssignment(language, stringLiteralNode)
-                )
+            const key = arg.text
+            const variableName = getVariableName(key)
+            const variableReference = ts.createIdentifier(variableName)
+
+            if (!l10nObjects[variableName]) {
+              const properties = []
+              for (const language of Object.keys(options.l10nData)) {
+                const foundText = options.l10nData[language][arg.text]
+                if (foundText && typeof foundText === 'string') {
+                  const stringLiteralNode = ts.createStringLiteral(foundText)
+                  ts.setEmitFlags(
+                    stringLiteralNode,
+                    ts.EmitFlags.NoAsciiEscaping
+                  )
+                  properties.push(
+                    ts.createPropertyAssignment(language, stringLiteralNode)
+                  )
+                }
               }
+              const object = ts.createObjectLiteral(properties)
+              l10nObjects[variableName] = object
             }
             return ts.createCall(
               ts.createPropertyAccess(ts.createIdentifier('__'), '$'),
               [],
-              [arg, ts.createObjectLiteral(properties)]
+              [arg, variableReference]
             )
           } else {
             return ts.visitEachChild(arg, visitor, transformationContext)
@@ -87,7 +117,23 @@ const transformer = options => transformationContext => sourceFile => {
     }
     return ts.visitEachChild(node, visitor, transformationContext)
   }
-  return ts.visitNode(sourceFile, visitor)
+  const transformed = ts.visitNode(sourceFile, visitor)
+  const entries = Object.entries(l10nObjects)
+  if (entries.length > 0) {
+    return ts.updateSourceFileNode(transformed, [
+      ts.createVariableStatement(
+        [],
+        ts.createVariableDeclarationList(
+          Object.entries(l10nObjects).map(([variableName, object]) =>
+            ts.createVariableDeclaration(variableName, undefined, object)
+          )
+        )
+      ),
+      ...transformed.statements,
+    ])
+  } else {
+    return transformed
+  }
 }
 
 module.exports = transformer
