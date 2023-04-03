@@ -1,24 +1,15 @@
 {
-  "devDependencies": {
-    "jest": "^24.8.0",
-    "prettier": "^1.17.1",
-    "typescript": "^3.2.2"
-  },
-  "peerDependencies": {
-    "typescript": "^3.2.2"
-  },
   "name": "@taskworld/typescript-custom-transformer-l10n",
-  "version": "3.0.0-0",
   "description": "A TypeScript Custom AST transformer that inlines localization strings into the source code",
+  "version": "3.0.0-0",
   "main": "transformer.js",
-  "dependencies": {},
   "scripts": {
     "test": "jest"
   },
   "files": [
     "transformer.js"
   ],
-  "author": "Thai Pangsakulyanont <org.yi.dttvb@gmail.com> (http://dt.in.th/)",
+  "author": "developers@taskworld.com",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -27,5 +18,17 @@
   "bugs": {
     "url": "https://github.com/taskworld/typescript-custom-transformer-l10n/issues"
   },
-  "homepage": "https://github.com/taskworld/typescript-custom-transformer-l10n#readme"
+  "homepage": "https://github.com/taskworld/typescript-custom-transformer-l10n#readme",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "prettier": "^2.8.7",
+    "typescript": "^3.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^3.2.2"
+  },
+  "resolutions": {
+    "**/minimatch": "3.1.2",
+    "**/lodash": "4.17.21"
+  }
 }
