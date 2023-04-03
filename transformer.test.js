@@ -48,17 +48,17 @@ test(
 test(
   '__.dual(1, "test", "hello")',
   'var l10n$test = { en: "Test", nyan: "Meow" }, l10n$hello = { en: "Hello", nyan: "Nyan" };' +
-    '__.dual(1, __.$("test", l10n$test), __.$("hello", l10n$hello));'
+  '__.dual(1, __.$("test", l10n$test), __.$("hello", l10n$hello));'
 )
 test(
   '__.dual.string(1, "test", "hello")',
   'var l10n$test = { en: "Test", nyan: "Meow" }, l10n$hello = { en: "Hello", nyan: "Nyan" };' +
-    '__.dual.string(1, __.$("test", l10n$test), __.$("hello", l10n$hello));'
+  '__.dual.string(1, __.$("test", l10n$test), __.$("hello", l10n$hello));'
 )
 test(
   '__("test", { x: __("hello") })',
   'var l10n$test = { en: "Test", nyan: "Meow" }, l10n$hello = { en: "Hello", nyan: "Nyan" };' +
-    '__(__.$("test", l10n$test), { x: __(__.$("hello", l10n$hello)) });'
+  '__(__.$("test", l10n$test), { x: __(__.$("hello", l10n$hello)) });'
 )
 
 // Ensures that the transformer doesn't break when the l10nData has a key that
@@ -66,7 +66,7 @@ test(
 test(
   'let x = () => [__("a+1"), __.string("a-1")]',
   'var l10n$a_1 = {}, l10n$a_1_ = {};' +
-    'var x = function () { return [__(__.$("a+1", l10n$a_1)), __.string(__.$("a-1", l10n$a_1_))]; };'
+  'var x = function () { return [__(__.$("a+1", l10n$a_1)), __.string(__.$("a-1", l10n$a_1_))]; };'
 )
 
 it('runs the example in README', async () => {
