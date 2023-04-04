@@ -9,9 +9,7 @@ const transformer =
   }): ts.TransformerFactory<ts.SourceFile> =>
   (transformationContext) =>
   (sourceFile) => {
-    const matchL10nNode = (node: ts.Node) => {
-      if (!ts.isCallExpression(node)) return null
-
+    const matchL10nNode = (node: ts.CallExpression) => {
       if (ts.isIdentifier(node.expression)) {
         // a(*)
         const a = node.expression.text
@@ -69,15 +67,14 @@ const transformer =
       return candidateName
     }
 
-    const visitor: ts.Visitor = (node) => {
-      const match = matchL10nNode(node)
+    const visitor: ts.Visitor<ts.Node, ts.Node> = (node) => {
+      const match = ts.isCallExpression(node) && matchL10nNode(node)
       if (match) {
-        const callExprNode = node as ts.CallExpression
         return transformationContext.factory.updateCallExpression(
-          callExprNode,
-          callExprNode.expression,
+          node,
+          node.expression,
           undefined,
-          callExprNode.arguments.map((arg) => {
+          node.arguments.map((arg) => {
             if (match.includes(arg)) {
               if (!ts.isStringLiteral(arg)) {
                 return ts.visitEachChild(arg, visitor, transformationContext)
@@ -131,7 +128,7 @@ const transformer =
       return ts.visitEachChild(node, visitor, transformationContext)
     }
 
-    const transformed = ts.visitNode(sourceFile, visitor)
+    const transformed = ts.visitNode(sourceFile, visitor) as ts.SourceFile
 
     const entries = Object.entries(l10nObjects)
     if (entries.length > 0) {
