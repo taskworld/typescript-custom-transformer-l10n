@@ -1,0 +1,34 @@
+on:
+  push:
+    branches: [master]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: yarn
+          registry-url: https://npm.pkg.github.com/
+          scope: '@taskworld'
+
+      - run: yarn install --frozen-lockfile --silent
+
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: package-version
+        uses: actions/github-script@v6
+        with:
+          result-encoding: string
+          script: return require('./package.json').version
+
+      - run: |
+          git tag v${{ steps.package-version.outputs.result }}
+          git push origin refs/tags/v${{ steps.package-version.outputs.result }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
