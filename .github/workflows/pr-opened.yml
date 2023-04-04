@@ -1,0 +1,75 @@
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  code-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: yarn
+          registry-url: https://npm.pkg.github.com/
+          scope: '@taskworld'
+
+      - run: yarn install --frozen-lockfile --silent
+
+      - run: yarn build
+
+      - run: yarn test
+
+  version-compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: npm install semver@7
+
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const semver = require('semver')
+
+            const package = require('./package.json')
+
+            if (semver.major(package.version) === semver.major(package.devDependencies.typescript)) {
+              console.log('Found matching major version ✔')
+            } else {
+              core.setFailed('Expect this package and TypeScript to share the same major version')
+            }
+
+            if (semver.satisfies(package.devDependencies.typescript, package.peerDependencies.typescript)) {
+              console.log('Found valid peer dependency version ✔')
+            } else {
+              core.setFailed('Expect `devDependencies.typescript` to satisfy `peerDependencies.typescript`')
+            }
+
+            const [owner, name] = package.name.replace(/^@/, '').split('/')
+            console.log('Using', { owner, name })
+
+            for (let page = 1;; page++) {
+              const { data: versions } = await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+                package_type: 'npm',
+                package_name: name,
+                org: owner,
+                per_page: 50,
+                page,
+              }).catch((error) => {
+                // Degrade gracefully
+                core.error(error)
+                return { data: [] }
+              })
+
+              if (versions.length === 0) {
+                break
+              }
+              
+              const version = versions.find(({ name }) => name === package.version)
+              if (version) {
+                core.setFailed(`Expect version ${version.name} not to have been published yet but found ${version.html_url}`)
+                break
+              }
+            }

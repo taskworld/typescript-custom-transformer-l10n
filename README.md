@@ -68,3 +68,9 @@ function Tutorial() {
 See the article [How to Write a TypeScript Transform (Plugin)](https://dev.doctorevidence.com/how-to-write-a-typescript-transform-plugin-fc5308fdd943) for how to use it in, e.g., webpack.
 
 **Important:** If you use build caching, e.g. `cache-loader`, make sure to set it up so that changes to the localization data would invalidate the cached build output.
+
+## Contributing
+
+1. Bump `version` field in _package.json_ making sure that the version is unique and the major number matches `typescript` version as in `devDependencies`.
+2. Create a new PR onto `master` branch.
+3. Once the PR is merged, GitHub Actions will publish the version mentioned in step 1 to [GitHub package registry](https://github.com/taskworld/typescript-custom-transformer-l10n/pkgs/npm/typescript-custom-transformer-l10n).
