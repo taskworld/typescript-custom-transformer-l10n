@@ -1,7 +1,7 @@
 {
   "name": "@taskworld/typescript-custom-transformer-l10n",
   "description": "A TypeScript Custom AST transformer that inlines localization strings into the source code",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "author": "developers@taskworld.com",
   "license": "MIT",
   "repository": {
@@ -17,7 +17,7 @@
     "index.js"
   ],
   "engines": {
-    "node": "18.15.0"
+    "node": ">=14"
   },
   "volta": {
     "node": "18.15.0"

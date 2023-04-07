@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - run: npm install semver@7
 
@@ -66,10 +68,19 @@ jobs:
               if (versions.length === 0) {
                 break
               }
-              
+
               const version = versions.find(({ name }) => name === package.version)
               if (version) {
                 core.setFailed(`Expect version ${version.name} not to have been published yet but found ${version.html_url}`)
+                core.info('Did you forget to manually bump the version in package.json?')
                 break
               }
+            }
+
+            const tagList = []
+            const exec = require('@actions/exec')
+            await exec('git --no-pager tag --list', { listeners: { stdout: buffer => { tagList.push(buffer.toString()) } } })
+            if (tagList.includes(`v${package.version}`)) {
+              core.setFailed(`Expect Git tag v${package.version} not to have been pushed yet`)
+              core.info('Did you run `npm version --git-tag-version`?')
             }
