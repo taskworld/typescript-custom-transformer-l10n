@@ -78,8 +78,7 @@ jobs:
             }
 
             const tagList = []
-            const exec = require('@actions/exec')
-            await exec('git --no-pager tag --list', { listeners: { stdout: buffer => { tagList.push(buffer.toString()) } } })
+            await exec.exec('git --no-pager tag --list', { listeners: { stdout: buffer => { tagList.push(buffer.toString()) } } })
             if (tagList.includes(`v${package.version}`)) {
               core.setFailed(`Expect Git tag v${package.version} not to have been pushed yet`)
               core.info('Did you run `npm version --git-tag-version`?')
