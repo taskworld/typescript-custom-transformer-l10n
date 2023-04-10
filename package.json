@@ -1,7 +1,7 @@
 {
   "name": "@taskworld/typescript-custom-transformer-l10n",
   "description": "A TypeScript Custom AST transformer that inlines localization strings into the source code",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "author": "developers@taskworld.com",
   "license": "MIT",
   "repository": {
@@ -23,7 +23,7 @@
     "node": "18.15.0"
   },
   "scripts": {
-    "build": "tsc transformer.ts --target ES2020 --module CommonJS --skipLibCheck && mv transformer.js index.js",
+    "build": "tsc transformer.ts --target ES2019 --module CommonJS --esModuleInterop --skipLibCheck && mv transformer.js index.js",
     "test": "jest",
     "prepublish": "yarn build",
     "prepare": "husky install"
